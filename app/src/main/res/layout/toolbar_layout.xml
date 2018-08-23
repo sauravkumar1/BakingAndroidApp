@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar  android:id="@+id/tb_topdetails"
+android:layout_width="match_parent"
+android:layout_height="?android:attr/actionBarSize"
+android:background="@drawable/backtoolbar"
+    android:layout_marginBottom="10dp"
+android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:elevation="3dp"
+app:contentInsetEnd="0dp"
+app:contentInsetLeft="0dp"
+app:contentInsetRight="0dp"
+app:contentInsetStart="0dp"
+app:contentInsetStartWithNavigation="0dp"
+app:titleTextColor="#00344D"
+android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/back_icon"
+            android:layout_height="30dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/backarrow"
+            android:layout_width="30dp"
+            android:layout_marginLeft="10dp"
+            />
+
+        <ImageView
+            android:layout_toRightOf="@+id/back_icon"
+            android:id="@+id/top_icon"
+            android:layout_height="50dp"
+            android:layout_width="60dp"
+            android:layout_marginLeft="15dp"
+            />
+    <TextView  android:id="@+id/tv_top_title"
+        android:layout_height="match_parent"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/top_icon"/>
+    </RelativeLayout>
+</android.support.v7.widget.Toolbar>
