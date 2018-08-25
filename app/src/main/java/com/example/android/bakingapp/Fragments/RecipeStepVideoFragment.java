@@ -90,7 +90,13 @@ public class RecipeStepVideoFragment  extends Fragment
             {
                 mPosition = savedInstanceState.getLong("POSITION");
             }
-            initializePlayer(Uri.parse(mVideoUrl), rootView);
+            if(savedInstanceState !=null && savedInstanceState.containsKey("INDEX"))
+            {
+                mIndex = savedInstanceState.getInt("INDEX");
+                mVideoUrl =savedInstanceState.getString("VIDEOURL");
+                mDescription=savedInstanceState.getString("DESCRIPTION");
+            }
+           // initializePlayer(Uri.parse(mVideoUrl), rootView);
         }
         else
         {
@@ -99,6 +105,7 @@ public class RecipeStepVideoFragment  extends Fragment
         }
         if( getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && !mIsTwoPane)
         {
+            mRootView = rootView;
             return    rootView;
         }
 
@@ -130,7 +137,7 @@ public class RecipeStepVideoFragment  extends Fragment
                         mDescription = mAllSteps.get(mIndex).Description;
                         mVideoUrl = mAllSteps.get(mIndex).VideoURL;
                         if (mVideoUrl.contains("https")) {
-                            initializePlayer(Uri.parse(mVideoUrl), rootView);
+                            initializePlayer(Uri.parse(mVideoUrl), rootView,0);
                         } else {
                             mExoPlayer = null;
                             mPlayerView = (SimpleExoPlayerView) rootView.findViewById(R.id.playerView);
@@ -159,7 +166,7 @@ public class RecipeStepVideoFragment  extends Fragment
                         mDescription = mAllSteps.get(mIndex).Description;
                         mVideoUrl = mAllSteps.get(mIndex).VideoURL;
                         if (mVideoUrl.contains("https")) {
-                            initializePlayer(Uri.parse(mVideoUrl), rootView);
+                            initializePlayer(Uri.parse(mVideoUrl), rootView,0);
                         } else {
 
                             mExoPlayer = null;
@@ -183,7 +190,7 @@ public class RecipeStepVideoFragment  extends Fragment
         description.setMovementMethod(new ScrollingMovementMethod());
     }
 
-    private void initializePlayer(Uri mediaUri, View view) {
+    private void initializePlayer(Uri mediaUri, View view, long position ) {
 
             mPlayerView = (SimpleExoPlayerView) view.findViewById(R.id.playerView);
 
@@ -200,11 +207,9 @@ public class RecipeStepVideoFragment  extends Fragment
                     mContext, userAgent), new DefaultExtractorsFactory(), null, null);
 
             mExoPlayer.prepare(mediaSource);
-            mExoPlayer.seekTo(mPosition);
+            mExoPlayer.seekTo(position);
             mExoPlayer.setPlayWhenReady(true);
             mPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
-
-
 
     }
 
@@ -225,7 +230,7 @@ public class RecipeStepVideoFragment  extends Fragment
     public void onResume() {
         super.onResume();
         if(mVideoUrl !=null)
-        initializePlayer( Uri.parse(mVideoUrl),mRootView);
+        initializePlayer( Uri.parse(mVideoUrl),mRootView,mPosition);
 
     }
     @Override
@@ -237,31 +242,42 @@ public class RecipeStepVideoFragment  extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        if (mExoPlayer!=null) {
-            mPosition = mExoPlayer.getCurrentPosition();
-
-        }
         outState.putLong("POSITION", mPosition);
+        outState.putInt("INDEX", mIndex);
+        outState.putString("VIDEOURL",mVideoUrl);
+        outState.putString("DESCRIPTION", mDescription);
+    }
 
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+         //   Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
     @Override
     public void onStop() {
         super.onStop();
+        /*
         if (mExoPlayer!=null) {
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer= null;
-        }
+        } */
     }
 
     @Override
     public void onPause() {
         super.onPause();
         if (mExoPlayer!=null) {
-       //     mPosition = mExoPlayer.getCurrentPosition();
+            mPosition = mExoPlayer.getCurrentPosition();
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer =null;

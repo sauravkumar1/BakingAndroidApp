@@ -8,32 +8,38 @@ import java.util.ArrayList;
 
 public class BakingAppUpdateService  extends IntentService {
 
-   // public static String FROM_ACTIVITY_INGREDIENTS_LIST ="FROM_ACTIVITY_INGREDIENTS_LIST";
+
 
     public BakingAppUpdateService() {
         super("BakingAppUpdateService");
     }
 
-    public static void startBakingService(Context context, ArrayList<String> fromActivityIngredientsList) {
+    public static void startBakingService(Context context, String fromActivityIngredientsList,String steps, String recipeName) {
         Intent intent = new Intent(context, BakingAppUpdateService.class);
-        intent.putExtra("FROM_ACTIVITY_INGREDIENTS_LIST",fromActivityIngredientsList);
+        intent.putExtra("INGREDIENTS",fromActivityIngredientsList);
+        intent.putExtra("STEPS",steps);
+        intent.putExtra("RECIPENAME",recipeName);
         context.startService(intent);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            ArrayList<String> fromActivityIngredientsList = intent.getExtras().getStringArrayList("FROM_ACTIVITY_INGREDIENTS_LIST");
-            handleActionUpdateBakingWidgets(fromActivityIngredientsList);
+            String fromActivityIngredientsList = intent.getExtras().getString("INGREDIENTS");
+            String steps = intent.getExtras().getString("STEPS");
+            String recipeName = intent.getExtras().getString("RECIPENAME");
+            handleActionUpdateBakingWidgets(fromActivityIngredientsList,steps, recipeName);
         }
     }
 
 
 
-    private void handleActionUpdateBakingWidgets(ArrayList<String> fromActivityIngredientsList) {
+    private void handleActionUpdateBakingWidgets(String fromActivityIngredientsList, String steps, String recipeName) {
         Intent intent = new Intent();
         intent.setAction("android.appwidget.action.APPWIDGET_UPDATE");
-        intent.putExtra("FROM_ACTIVITY_INGREDIENTS_LIST",fromActivityIngredientsList);
+        intent.putExtra("INGREDIENTS",fromActivityIngredientsList);
+        intent.putExtra("SETPS",steps);
+        intent.putExtra("RECIPENAME",recipeName);
         sendBroadcast(intent);
     }
 

@@ -10,14 +10,16 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import android.widget.TextView;
 
+import com.example.android.bakingapp.Data.IngredientData;
 import com.example.android.bakingapp.R;
 import static com.example.android.bakingapp.Widget.BakingAppWidgetProvider.ingredientsList;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BakingAppWidgetService  extends RemoteViewsService {
-    List<String> remoteViewingredientsList;
+    ArrayList<String> remoteViewingredientsList;
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
@@ -40,7 +42,15 @@ public class BakingAppWidgetService  extends RemoteViewsService {
 
         @Override
         public void onDataSetChanged() {
-            remoteViewingredientsList = ingredientsList;
+            ArrayList<IngredientData> data = IngredientData.stringToArray(ingredientsList);
+            ArrayList<String>  dataForWidget = new ArrayList<>();
+
+            for(int i = 0 ; i < data.size();  i++ )
+            {
+                String ing  = data.get(i).Quantity + " " +data.get(i).Measure + " of " +data.get(i).Ingredient;
+                dataForWidget.add(ing);
+            }
+            remoteViewingredientsList = dataForWidget;
         }
 
         @Override

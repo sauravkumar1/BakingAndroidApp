@@ -38,8 +38,10 @@ public class IngredientData {
 
 
     public static ArrayList<IngredientData> stringToArray(String string){
-        String[] elements = string.split("ingredientComma");
+
         ArrayList<IngredientData> res = new ArrayList<IngredientData>();
+              if(string == null) return  res;
+        String[] elements = string.split("ingredientComma");
 
         for (String element : elements) {
             String[] item = element.split("comma");

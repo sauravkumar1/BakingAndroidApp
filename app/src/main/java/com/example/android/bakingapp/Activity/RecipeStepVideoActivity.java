@@ -1,6 +1,7 @@
 package com.example.android.bakingapp.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -31,6 +32,7 @@ public class RecipeStepVideoActivity extends AppCompatActivity implements OnFrag
     private String mDescription;
     private String mVideoUrl;
     private String mAllSteps;
+    private  String mIngredients;
     private int mIndex;
     private String mRecipeName;
     private static  final String  mIndexOnRotation = "IndexOnRotation";
@@ -40,12 +42,11 @@ public class RecipeStepVideoActivity extends AppCompatActivity implements OnFrag
 
     @Nullable  @BindView(R.id.tv_top_title)    TextView mTitle;
 
-    @Nullable   @BindView(R.id.back_icon)    ImageView backArrow;
-
     @Nullable @BindView(R.id.top_icon)    ImageView icon;
 
     @Override
-    public void onFragmentStepSelected(int position) {
+    public void onFragmentStepSelected(int position)
+    {
         mIndex = position;
     }
 
@@ -55,6 +56,17 @@ public class RecipeStepVideoActivity extends AppCompatActivity implements OnFrag
         setContentView(R.layout.recipe_video_layout);
 
         ButterKnife.bind(this);
+        Toolbar toolbarTop = (Toolbar) findViewById(R.id.tb_topdetails);
+        if(toolbarTop !=null) {
+            TextView mTitle = (TextView) toolbarTop.findViewById(R.id.tv_top_title);
+            mTitle.setText("  Baking Time");
+            ImageView icon = (ImageView) toolbarTop.findViewById(R.id.top_icon);
+            icon.setImageResource(R.drawable.stepsicon);
+            setSupportActionBar(toolbarTop);
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        }
         Intent intentThatStartedThisActivity = getIntent();
         if (intentThatStartedThisActivity != null) {
             if (intentThatStartedThisActivity.hasExtra("DESCRIPTION")) {
@@ -63,26 +75,40 @@ public class RecipeStepVideoActivity extends AppCompatActivity implements OnFrag
                 if (intentThatStartedThisActivity.hasExtra("VIDEOURL")) {
                     mVideoUrl = intentThatStartedThisActivity.getStringExtra("VIDEOURL");
                 }
-                if (intentThatStartedThisActivity.hasExtra("ALLSTEPS")) {
-                    mAllSteps = intentThatStartedThisActivity.getStringExtra("ALLSTEPS");
+                if (intentThatStartedThisActivity.hasExtra("INGREDIENTS")) {
+                    mIngredients = intentThatStartedThisActivity.getStringExtra("INGREDIENTS");
+                }
+                if (intentThatStartedThisActivity.hasExtra("STEPS")) {
+                    mAllSteps = intentThatStartedThisActivity.getStringExtra("STEPS");
 
                 }
                 if (intentThatStartedThisActivity.hasExtra("RECIPENAME")) {
                     mRecipeName = intentThatStartedThisActivity.getStringExtra("RECIPENAME");
-                 SetToolBar();
+
                 }
                 if (intentThatStartedThisActivity.hasExtra("INDEX")) {
                     mIndex = intentThatStartedThisActivity.getIntExtra("INDEX",0);
                 }
+
                 if (savedInstanceState != null) {
                    ArrayList<StepsData> data= StepsData.stringToArray(mAllSteps);
                     mIndex = savedInstanceState.getInt(mIndexOnRotation, 0);
                     mDescription = data.get(mIndex).Description;
                     mVideoUrl =data.get(mIndex).VideoURL;
                 }
-                StartFragment();
+                if(savedInstanceState == null)
+                    StartFragment();
+
             }
         }
+
+        SharedPreferences.Editor editor = getSharedPreferences("SHARED_DATA", MODE_PRIVATE).edit();
+        editor.putString("INGREDIENTS", mIngredients);
+        editor.putString("STEPS", mAllSteps);
+        editor.putString("RECIPENAME", mRecipeName);
+        editor.apply();
+
+        SetToolBar();
     }
 
 
@@ -105,19 +131,15 @@ public class RecipeStepVideoActivity extends AppCompatActivity implements OnFrag
         if( getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
            // Toolbar toolbarTop =     (Toolbar) findViewById(R.id.tb_topdetails);
           //  TextView mTitle = (TextView) toolbarTop.findViewById(R.id.tv_top_title);
+
             mTitle.setText(mRecipeName);
          //   ImageView icon = (ImageView) toolbarTop.findViewById(R.id.top_icon);
             icon.setImageResource(R.drawable.stepsicon);
             setSupportActionBar(toolbarTop);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-          //  ImageView backArrow  = (ImageView) toolbarTop.findViewById(R.id.back_icon);
-            backArrow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         }
     }
 
@@ -129,6 +151,7 @@ public class RecipeStepVideoActivity extends AppCompatActivity implements OnFrag
         // Save our own state now
         outState.putInt(mIndexOnRotation, mIndex);
     }
+
 
 
     @Override

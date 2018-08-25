@@ -1,12 +1,16 @@
 package com.example.android.bakingapp.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import android.view.MenuItem;
 import android.view.View;
+import android.support.v4.app.TaskStackBuilder;
 
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,8 +41,6 @@ public class   SingleRecipeActivity  extends AppCompatActivity implements  Steps
 
     @BindView(R.id.tv_top_title)    TextView mTitle;
 
-    @BindView(R.id.back_icon)    ImageView backArrow;
-
     @BindView(R.id.top_icon)    ImageView icon;
 
 
@@ -53,26 +55,17 @@ public class   SingleRecipeActivity  extends AppCompatActivity implements  Steps
         else
             isTwoPane = false;
 
-     //   Toolbar toolbarTop = (Toolbar) findViewById(R.id.tb_topdetails);
-       // TextView mTitle = (TextView) toolbarTop.findViewById(R.id.tv_top_title);
+       Toolbar toolbarTop = (Toolbar) findViewById(R.id.tb_topdetails);
+        TextView mTitle = (TextView) toolbarTop.findViewById(R.id.tv_top_title);
         mTitle.setText("  Baking Time");
-       // ImageView icon  = (ImageView) toolbarTop.findViewById(R.id.top_icon);
+       ImageView icon  = (ImageView) toolbarTop.findViewById(R.id.top_icon);
         icon.setImageResource(R.drawable.stepsicon);
         setSupportActionBar(toolbarTop);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-     //   ImageView backArrow  = (ImageView) toolbarTop.findViewById(R.id.back_icon);
-  backArrow.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-          finish();
-
-      }
-  });
-
-
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
             Intent intentThatStartedThisActivity = getIntent();
+
 
             if (intentThatStartedThisActivity != null) {
                 if (intentThatStartedThisActivity.hasExtra("INGREDIENTS")) {
@@ -87,28 +80,38 @@ public class   SingleRecipeActivity  extends AppCompatActivity implements  Steps
 
                     }
 
-                    mTitle.setText(mRecipeName);
 
-                    startStepsAndVideoFragments();
                 }
 
+        else {
+                    SharedPreferences prefs = getSharedPreferences("SHARED_DATA", MODE_PRIVATE);
+                     mIngredientsDataString = prefs.getString("INGREDIENTS", null);
+                     mStepsDataString = prefs.getString("STEPS", null);
+                     mRecipeName = prefs.getString("RECIPENAME", null);
 
+
+                }
                 if(isTwoPane)
                 {
                     onStepSelected(0);
                 }
+                mTitle.setText(mRecipeName);
+
+                startStepsAndIngredientsFragments();
 
             }
     }
 
 
-    private void startStepsAndVideoFragments()
+    private void startStepsAndIngredientsFragments()
     {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Bundle bundle = new Bundle();
         bundle.putString("INGREDIENTS", mIngredientsDataString);
         bundle.putString("STEPS", mStepsDataString);
         bundle.putBoolean("ISTWOPANE", isTwoPane);
+        bundle.putString("RECIPENAME", mRecipeName);
+        bundle.putString("STEPS", mStepsDataString);
         RecipeIngredientsFragment ingredientFragment = new RecipeIngredientsFragment();
         ingredientFragment.setArguments(bundle);
         fragmentManager.beginTransaction()
@@ -126,7 +129,7 @@ public class   SingleRecipeActivity  extends AppCompatActivity implements  Steps
     @Override
     public void onResume(){
         super.onResume();
-        startStepsAndVideoFragments();
+        startStepsAndIngredientsFragments();
         // put your code here...
 
     }
@@ -144,6 +147,8 @@ public class   SingleRecipeActivity  extends AppCompatActivity implements  Steps
             bundle.putInt("INDEX", position);
             bundle.putBoolean("ISTWOPANE", true);
             bundle.putString("RECIPENAME", mRecipeName);
+            bundle.putString("INGREDIENTS", mIngredientsDataString);
+
             RecipeStepVideoFragment stepvideoFragment = new RecipeStepVideoFragment();
             stepvideoFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
@@ -166,14 +171,35 @@ public class   SingleRecipeActivity  extends AppCompatActivity implements  Steps
         Intent intentToStartDetailActivity = new Intent(getApplicationContext(), destinationClass);
         intentToStartDetailActivity.putExtra("DESCRIPTION", description);
         intentToStartDetailActivity.putExtra("VIDEOURL", videoUrl);
-        intentToStartDetailActivity.putExtra("ALLSTEPS", mStepsDataString);
+        intentToStartDetailActivity.putExtra("STEPS", mStepsDataString);
+        intentToStartDetailActivity.putExtra("INGREDIENTS", mIngredientsDataString);
         intentToStartDetailActivity.putExtra("INDEX", index);
         intentToStartDetailActivity.putExtra("ISTWOPANE", false);
         intentToStartDetailActivity.putExtra("RECIPENAME",mRecipeName);
         getApplicationContext().startActivity(intentToStartDetailActivity);
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }
+
+
+
+
+
 
 
 

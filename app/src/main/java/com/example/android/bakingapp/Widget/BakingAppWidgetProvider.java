@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class BakingAppWidgetProvider extends AppWidgetProvider {
 
 
-    static ArrayList<String> ingredientsList = new ArrayList<>();
+    static String ingredientsList ;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         // Construct the RemoteViews object
@@ -74,7 +74,7 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
         final String action = intent.getAction();
 
         if (action.equals("android.appwidget.action.APPWIDGET_UPDATE")) {
-            ingredientsList = intent.getExtras().getStringArrayList("FROM_ACTIVITY_INGREDIENTS_LIST");
+            ingredientsList = intent.getExtras().getString("INGREDIENTS");
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.gv_widget);
             //Now update all widgets
             BakingAppWidgetProvider.updateBakingWidgets(context, appWidgetManager, appWidgetIds);

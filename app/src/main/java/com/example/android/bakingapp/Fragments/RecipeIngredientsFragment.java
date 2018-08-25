@@ -25,6 +25,8 @@ public class RecipeIngredientsFragment extends Fragment {
     String mIngredientsDataString;
     LinearLayoutManager mLinearLayoutManager;
     private  boolean mIsTwoPane;
+    private  String mSteps;
+    private  String mRecipeName;
 
     // Mandatory empty constructor
     public RecipeIngredientsFragment( ) {
@@ -37,6 +39,8 @@ public class RecipeIngredientsFragment extends Fragment {
 
         mIngredientsDataString = getArguments().getString("INGREDIENTS");
         mIsTwoPane = getArguments().getBoolean("ISTWOPANE");
+        mSteps = getArguments().getString("STEPS");
+        mRecipeName = getArguments().getString("RECIPENAME");
 
         final View rootView = inflater.inflate(R.layout.fragment_recipe_ingredients_layout, container, false);
         ButterKnife.bind(this, rootView);
@@ -72,7 +76,7 @@ public class RecipeIngredientsFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
 
 
-        BakingAppUpdateService.startBakingService(getContext(),dataForWidget);
+        BakingAppUpdateService.startBakingService(getContext(),mIngredientsDataString,mSteps,mRecipeName);
         return    rootView;
     }
 }

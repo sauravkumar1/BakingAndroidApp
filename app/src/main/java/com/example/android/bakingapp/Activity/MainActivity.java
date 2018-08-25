@@ -31,19 +31,12 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity
 {
     private RecipeCardsAdapter recipeAdapter;
-   // private RecyclerView mRecipesRecyclerView;
 
     @BindView(R.id.tb_topdetails)    Toolbar toolbarTop;
 
-    @BindView(R.id.tv_top_title)    TextView mTitle;
-
-    @BindView(R.id.back_icon)    ImageView backArrow;
-
+   @BindView(R.id.tv_top_title)    TextView mTitle;
     @BindView(R.id.top_icon)    ImageView icon;
     @BindView(R.id.rv_recipe_cards)    RecyclerView mRecipesRecyclerView;
-
-
-    // The Idling Resource which will be null in production.
     @Nullable
     private SimpleIdlingResource mIdlingResource;
 
@@ -67,17 +60,16 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         getIdlingResource();
-        //Toolbar toolbarTop = (Toolbar) findViewById(R.id.tb_topdetails);
-     //   TextView mTitle = (TextView) toolbarTop.findViewById(R.id.tv_top_title);
-        mTitle.setText("  Baking Time");
-       // ImageView backArrow  = (ImageView) toolbarTop.findViewById(R.id.back_icon);
-        backArrow.setVisibility(View.INVISIBLE);
-    //    ImageView icon  = (ImageView) toolbarTop.findViewById(R.id.top_icon);
-        icon.setImageResource(R.drawable.bakingtime);
-        setSupportActionBar(toolbarTop);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-       // mRecipesRecyclerView = findViewById(R.id.rv_recipe_cards);
+
+        Toolbar toolbarTop = (Toolbar) findViewById(R.id.tb_topdetails);
+       TextView mTitle = (TextView) toolbarTop.findViewById(R.id.tv_top_title);
+       mTitle.setText("  Baking Time");
+
+      ImageView icon  = (ImageView) toolbarTop.findViewById(R.id.top_icon);
+       icon.setImageResource(R.drawable.bakingtime);
+        setSupportActionBar(toolbarTop);
+
        if( getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
        {
            LinearLayoutManager layoutManagerRecipes = new GridLayoutManager(MainActivity.this, 2);
@@ -89,8 +81,11 @@ public class MainActivity extends AppCompatActivity
        }
         mRecipesRecyclerView.setHasFixedSize(true);
         String completeUrl= getResources().getString(R.string.recipe_url);
-        new FetchRecipiesTask().execute(completeUrl);
 
+        if (mIdlingResource != null) {
+            mIdlingResource.setIdleState(false);
+        }
+        new FetchRecipiesTask().execute(completeUrl);
 
 
     }
@@ -100,6 +95,9 @@ public class MainActivity extends AppCompatActivity
     {
        recipeAdapter = new RecipeCardsAdapter(recipesList);
        mRecipesRecyclerView.setAdapter(recipeAdapter);
+        if (mIdlingResource != null) {
+            mIdlingResource.setIdleState(true);
+        }
 
     }
 
